@@ -2,10 +2,9 @@ name: Continuous Integration
 
 on:
   pull_request:
+    types:
+      - synchronize
     branches:
-      - main
-  push:
-    branches-ignore:
       - main
 
 jobs:
@@ -22,12 +21,18 @@ jobs:
         with:
           args: >- # allows you to break string into multiple lines
             --standalone
+            --extract-media=media
             --output=example.tex
             --from=markdown+smart
             --to=latex
             README.md
       - run: |
-          echo "newpx" > "extra-packages.txt"
+          cat > extra-packages.txt << EOF
+          transparent
+          trimspaces
+          svg
+          catchfile
+          EOF
 
       - name: Test Local Action
         id: test-action

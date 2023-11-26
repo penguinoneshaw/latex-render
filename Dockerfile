@@ -4,8 +4,10 @@ FROM docker.io/alpine:3
 ARG TL_MIRROR="https://texlive.info/CTAN/systems/texlive/tlnet"
 ARG TL_YEAR="2023"
 SHELL [ "/bin/sh", "-x", "-c" ]
+WORKDIR /
 
-RUN apk add --no-cache perl curl fontconfig libgcc gnupg ghostscript && \
+# hadolint ignore=DL3018,DL3003
+RUN apk add --no-cache perl curl fontconfig libgcc gnupg ghostscript inkscape font-terminus font-inconsolata font-dejavu font-noto font-noto-cjk font-awesome font-noto-extra && \
     mkdir "/tmp/texlive" && cd "/tmp/texlive" && \
     wget -nv "$TL_MIRROR/install-tl-unx.tar.gz" && \
     tar xzvf ./install-tl-unx.tar.gz && \
@@ -20,7 +22,8 @@ RUN apk add --no-cache perl curl fontconfig libgcc gnupg ghostscript && \
     echo "TEXMFSYSVAR /opt/texlive/${TL_YEAR}/texmf-var" && \
     echo "TEXMFHOME ~/.texmf" \
     ) > "/tmp/texlive.profile" && \
-    "./install-tl-${TL_YEAR}"*"/install-tl" --location "$TL_MIRROR" -profile "/tmp/texlive.profile" && \
+    cd "./install-tl-${TL_YEAR}"* &&\
+    "./install-tl" --location "$TL_MIRROR" -profile "/tmp/texlive.profile" && \
     rm -vf "/opt/texlive/${TL_YEAR}/install-tl" && \
     rm -vf "/opt/texlive/${TL_YEAR}/install-tl.log" && \
     rm -vrf /tmp/*
