@@ -1,21 +1,22 @@
-name: Hello, World!
-description: Greet someone and record the time
-author: GitHub Actions
-
-# Define your inputs here.
+name: render-latex
+description: Renders a LaTeX file with XeLaTeX
+author: James Shaw <penguinoneshaw@gmail.com>
 inputs:
-  who-to-greet:
-    description: Who to greet
+  root-file:
     required: true
-    default: World
+    description: The root .tex file
+  extra-packages:
+    description: A file containing a list of extra packages to be included
+    default: extra-packages.txt
 
-# Define your outputs here.
 outputs:
-  time:
-    description: The time we greeted you
-
+  output-dir:
+    description: The directory the latexmk output is directed to
 runs:
   using: docker
-  image: Dockerfile
+  image: "Dockerfile"
+  entrypoint: /entrypoint.sh
+  args:
+    - "${{ inputs.root-file }}"
   env:
-    INPUT_WHO_TO_GREET: ${{ inputs.who-to-greet }}
+    EXTRA_PACKAGES_FILE: "${{ inputs.extra-packages }}"

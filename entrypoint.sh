@@ -1,12 +1,23 @@
-#!/bin/sh -l
+#!/usr/bin/env sh
+set -x
 
-# Use INPUT_<INPUT_NAME> to get the value of an input
-GREETING="Hello, $INPUT_WHO_TO_GREET!"
+if [ -e "${EXTRA_PACKAGES_FILE}" ]; then
+    xargs tlmgr install <"$EXTRA_PACKAGES_FILE"
+else
+    echo "::warning file=$EXTRA_PACKAGES_FILE::Extra packages file not found."
+fi
 
-# Use workflow commands to do things like set debug messages
-echo "::notice file=entrypoint.sh,line=7::$GREETING"
+mkdir output
+output_dir="output"
 
-# Write outputs to the $GITHUB_OUTPUT file
-echo "greeting=$GREETING" >> "$GITHUB_OUTPUT"
+cd "$(dirname "$1")" || exit 1
 
-exit 0
+file="$(basename "$1")"
+
+echo "::group::LaTeXmk build"
+latexmk -interaction=batchmode -pdfxe "$file" -output-directory="$output_dir" -shell-escape -g -f
+
+latexmk -c "$file"
+echo "::endgroup::"
+
+echo "output-dir=$output_dir" >>"$GITHUB_OUTPUT"
