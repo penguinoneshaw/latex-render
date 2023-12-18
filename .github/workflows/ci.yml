@@ -40,7 +40,7 @@ jobs:
         with:
           root-file: example
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: final-document
           path: "${{ steps.test-action.outputs.output-dir }}/*.pdf"
